@@ -66,7 +66,8 @@ export default {
       draftStories: [],
       liveStories: [],
       draggedEl: null,
-      draggedStoryRef: null
+      draggedStoryRef: null,
+      originLane: null
     };
   },
   created: function() {
@@ -75,10 +76,13 @@ export default {
   },
   methods: {
     onDragStart: function(e) {
+      // keep track of parent lane
       console.log("drag started", e);
       e.dataTransfer.effectAllowed = "move";
       this.draggedEl = e.target.id;
       this.draggedStoryRef = e.target.dataset.story;
+      this.originLane = e.target.parentNode.id;
+      console.log(this.originLane, this.draggedStoryRef);
     },
     onDragOver: function(e) {
       e.preventDefault();
@@ -87,17 +91,43 @@ export default {
       e.preventDefault();
     },
     onDrop: function(e) {
-      // on drop we need to check:
-      // 1.) Is it dropped on the liveStories list?
-      // 2.) If it is, is the list empty? If it is just push.
-      console.log("entered drop zone", e.target.id);
-      if (e.target.id === "liveLane") {
+      // Cases to handle:
+      // 1.) Move a story from draft to live - done
+      // 2.) Move a story from draft to a specific spot in live
+      // 3.) Move stories up and down in live - done
+      // 4.) Move stories from live back to draft - done
+      console.log("entered drop zone", e);
+      // Move a story from draft to live
+      if (e.target.id === "liveLane" && this.originLane === "draftLane") {
         let story = this.draftStories.find(draft => {
           return draft.id == this.draggedStoryRef;
         });
         this.liveStories.push(story);
         let startIndex = this.draggedEl;
         this.draftStories.splice(startIndex, 1);
+      }
+      // Move a story from live to draft
+      if (e.target.id === "draftLane" && this.originLane === "liveLane") {
+        let story = this.liveStories.find(story => {
+          return story.id == this.draggedStoryRef;
+        });
+        let startIndex = this.draggedEl;
+        this.liveStories.splice(startIndex, 1);
+        this.draftStories.push(story);
+      }
+      // Move a story up and down in live
+      if (
+        this.originLane === "liveLane" &&
+        e.target.parentNode.id === "liveLane"
+      ) {
+        console.log("moving in live list");
+        let indexToInsertAt = e.target.id;
+        let story = this.liveStories.find(story => {
+          return story.id == this.draggedStoryRef;
+        });
+        let startIndex = this.draggedEl;
+        this.liveStories.splice(startIndex, 1);
+        this.liveStories.splice(indexToInsertAt, 0, story);
       }
     }
   }
@@ -162,7 +192,7 @@ header {
 
     &__content__container {
       width: 100%;
-      min-height: 100px;
+      min-height: 100vh;
     }
   }
 }

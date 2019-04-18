@@ -47,6 +47,7 @@ $btn--red: #ff3760;
   width: 100%;
   position: relative;
   margin: 1rem 0;
+  pointer-events: none;
 }
 .img__container {
   height: 120px;
