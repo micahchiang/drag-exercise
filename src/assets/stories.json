@@ -1,0 +1,44 @@
+{
+    "stories": [
+        {
+            "id": 1,
+            "title": "Must go faster... go, go, go, go!",
+            "author": "David Levinson",
+            "publishedAt": "Published Mar 12, 2019 at 8:55 am",
+            "img": "https://www.fillmurray.com/300/300",
+            "status": "Not Placed"
+        },
+        {
+            "id": 2,
+            "title": "Is this my espresso machine?",
+            "author": "Alistair Hennessy",
+            "publishedAt": "Published Feb 23, 2019 at 1:05 am",
+            "img": "https://www.fillmurray.com/700/300",
+            "status": "Not Placed"
+        },
+        {
+            "id": 3,
+            "title": "What do they got in there? King Kong?",
+            "author": "Dr. Ian Malcolm",
+            "publishedAt": "Published Feb 12, 2019 at 11:35 am",
+            "img": "https://www.fillmurray.com/400/300",
+            "status": "Not Placed"
+        },
+        {
+            "id": 4,
+            "title": "So you two dig up, dig up dinosaurs?",
+            "author": "Dr. Ian Malcolm",
+            "publishedAt": "Published Feb 2, 2019 at 12:05 pm",
+            "img": "https://www.fillmurray.com/200/300",
+            "status": "Not Placed"
+        },
+        {
+            "id": 5,
+            "title": "You really thinkg you can fly that thing?",
+            "author": "David Levinson",
+            "publishedAt": "Published Jan 2, 2019 at 10:05 am",
+            "img": "https://www.fillmurray.com/500/300",
+            "status": "Not Placed"
+        }
+    ]
+}
