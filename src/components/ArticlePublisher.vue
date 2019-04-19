@@ -1,8 +1,14 @@
 <template>
   <main>
     <header>
-      <button class="btn__reset">Reset</button>
-      <button class="btn__save">Save Changes</button>
+      <button
+        v-on:click="showModal('Reset List?')"
+        class="btn btn__reset"
+      >Reset</button>
+      <button
+        v-on:click="showModal('Submit List?')"
+        class="btn btn__save"
+      >Save Changes</button>
     </header>
     <section
       class="content__container"
@@ -49,6 +55,22 @@
         </div>
       </div>
     </section>
+    <div
+      v-if="hasModal"
+      class="modal__container"
+    >
+      <main class="modal__body">
+        <h3>{{modalMessage}}</h3>
+        <button
+          v-on:click="hideModal()"
+          class="btn btn__cancel"
+        >Cancel</button>
+        <button
+          v-on:click="handleConfirm()"
+          class="btn btn__save"
+        >Confirm</button>
+      </main>
+    </div>
   </main>
 </template>
 
@@ -77,7 +99,9 @@ export default {
     return {
       draggedEl: null,
       draggedStoryRef: null,
-      originLane: null
+      originLane: null,
+      hasModal: false,
+      modalMessage: ""
     };
   },
   created: function() {
@@ -85,12 +109,12 @@ export default {
   },
   methods: {
     onDragStart: function(e) {
-      // keep track of parent lane
       e.dataTransfer.effectAllowed = "move";
       this.draggedEl = e.target.id;
       this.draggedStoryRef = e.target.dataset.story;
       this.originLane = e.target.parentNode.id;
     },
+    // preventDefault to allow onDrop
     onDragOver: function(e) {
       e.preventDefault();
     },
@@ -142,6 +166,22 @@ export default {
       let payload = { message, storyRef, storyArrayIndex, insertAtIndex };
       console.log("reaches handle update", payload);
       this.$store.dispatch("updateLists", payload);
+    },
+    showModal: function(msg) {
+      this.modalMessage = msg;
+      this.hasModal = true;
+    },
+    hideModal: function() {
+      this.modalMessage = "";
+      this.hasModal = false;
+    },
+    handleConfirm: function() {
+      if (this.modalMessage === "Reset List?") {
+        this.$store.dispatch("resetLists");
+      } else if (this.modalMessage === "Submit List?") {
+        this.$store.dispatch("submitLists", this.liveStories);
+      }
+      this.hideModal();
     }
   }
 };
@@ -165,22 +205,24 @@ header {
   display: flex;
   justify-content: flex-end;
   padding: 1rem;
-
-  button {
-    margin: 0 0.5rem;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    font-size: 0.75rem;
-    padding: 1rem;
-    color: $color--white;
-  }
-  .btn__reset {
-    background-color: $btn--teal;
-  }
-  .btn__save {
-    background-color: $btn--green;
-  }
+}
+.btn {
+  margin: 0 0.5rem;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  font-size: 0.75rem;
+  padding: 1rem;
+  color: $color--white;
+}
+.btn__reset {
+  background-color: $btn--teal;
+}
+.btn__save {
+  background-color: $btn--green;
+}
+.btn__cancel {
+  background-color: $btn--red;
 }
 
 .content__container {
@@ -207,6 +249,24 @@ header {
       width: 100%;
       min-height: 100vh;
     }
+  }
+}
+.modal__container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(#000000, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .modal__body {
+    padding: 1rem;
+    border-radius: 5px;
   }
 }
 </style>

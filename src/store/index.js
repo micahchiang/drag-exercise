@@ -1,12 +1,14 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import * as data from "../assets/stories.json";
+import BackendService from "../services/backend.service";
+// import * as data from "../assets/stories.json";
 
 Vue.use(Vuex);
 
+const backendService = new BackendService();
+
 const store = new Vuex.Store({
   state: {
-    masterStoriesList: [],
     draftStories: [],
     liveStories: []
   },
@@ -16,8 +18,14 @@ const store = new Vuex.Store({
   },
   mutations: {
     setDrafts(state, data) {
-      state.masterStoriesList = data;
       state.draftStories = data;
+    },
+    resetLists(state) {
+      state.draftStories = [...state.draftStories, ...state.liveStories];
+      state.liveStories = [];
+      state.draftStories.forEach(draft => {
+        draft.status = "Not Placed";
+      });
     },
     updateLists(state, data) {
       let message = data.message;
@@ -72,15 +80,26 @@ const store = new Vuex.Store({
   actions: {
     async getDrafts({ commit }) {
       try {
-        let drafts = await data.stories;
+        let drafts = await backendService.getDrafts();
         commit("setDrafts", drafts);
       } catch (e) {
         console.log(`An error occurred on data retrieval: ${e}`);
       }
     },
     updateLists({ commit }, data) {
-      console.log("in updatelists action");
       commit("updateLists", data);
+    },
+    resetLists({ commit }) {
+      commit("resetLists");
+    },
+    async submitLists(data) {
+      let backendPayload = { msg: "updatePublishedStories", data };
+      try {
+        let res = await backendService.postToServer(backendPayload);
+        console.log(res);
+      } catch (e) {
+        console.log(`error posting to server: ${e}`);
+      }
     }
   }
 });
