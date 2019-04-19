@@ -54,35 +54,42 @@
 
 <script>
 import ArticleSummaryCard from "./ArticleSummaryCard";
-import * as data from "../assets/stories.json";
+import { mapState } from "vuex";
+
+// Cases to handle:
+// 1.) Move a story from draft to live - done
+// 2.) Move a story from draft to a specific spot in live - done
+// 3.) Move stories up and down in live - done
+// 4.) Move stories from live back to draft - done
 
 export default {
   name: "ArticlePublisher",
   components: {
     ArticleSummaryCard
   },
+  computed: {
+    ...mapState({
+      draftStories: state => state.draftStories,
+      liveStories: state => state.liveStories
+    })
+  },
   data: function() {
     return {
-      draftStories: [],
-      liveStories: [],
       draggedEl: null,
       draggedStoryRef: null,
       originLane: null
     };
   },
   created: function() {
-    let stories = data.stories;
-    this.draftStories = stories;
+    this.$store.dispatch("getDrafts");
   },
   methods: {
     onDragStart: function(e) {
       // keep track of parent lane
-      console.log("drag started", e);
       e.dataTransfer.effectAllowed = "move";
       this.draggedEl = e.target.id;
       this.draggedStoryRef = e.target.dataset.story;
       this.originLane = e.target.parentNode.id;
-      console.log(this.originLane, this.draggedStoryRef);
     },
     onDragOver: function(e) {
       e.preventDefault();
@@ -91,44 +98,50 @@ export default {
       e.preventDefault();
     },
     onDrop: function(e) {
-      // Cases to handle:
-      // 1.) Move a story from draft to live - done
-      // 2.) Move a story from draft to a specific spot in live
-      // 3.) Move stories up and down in live - done
-      // 4.) Move stories from live back to draft - done
-      console.log("entered drop zone", e);
-      // Move a story from draft to live
       if (e.target.id === "liveLane" && this.originLane === "draftLane") {
-        let story = this.draftStories.find(draft => {
-          return draft.id == this.draggedStoryRef;
-        });
-        this.liveStories.push(story);
-        let startIndex = this.draggedEl;
-        this.draftStories.splice(startIndex, 1);
-      }
-      // Move a story from live to draft
-      if (e.target.id === "draftLane" && this.originLane === "liveLane") {
-        let story = this.liveStories.find(story => {
-          return story.id == this.draggedStoryRef;
-        });
-        let startIndex = this.draggedEl;
-        this.liveStories.splice(startIndex, 1);
-        this.draftStories.push(story);
-      }
-      // Move a story up and down in live
-      if (
+        // Move a story from draft to live
+        this.handleUpdate("draftToLive", this.draggedStoryRef, this.draggedEl);
+      } else if (
+        e.target.id === "draftLane" &&
+        this.originLane === "liveLane"
+      ) {
+        // Move a story from live to draft
+        this.handleUpdate("liveToDraft", this.draggedStoryRef, this.draggedEl);
+      } else if (
         this.originLane === "liveLane" &&
         e.target.parentNode.id === "liveLane"
       ) {
-        console.log("moving in live list");
+        // Move a story up and down in live
         let indexToInsertAt = e.target.id;
-        let story = this.liveStories.find(story => {
-          return story.id == this.draggedStoryRef;
-        });
-        let startIndex = this.draggedEl;
-        this.liveStories.splice(startIndex, 1);
-        this.liveStories.splice(indexToInsertAt, 0, story);
+        this.handleUpdate(
+          "liveOrderChange",
+          this.draggedStoryRef,
+          this.draggedEl,
+          indexToInsertAt
+        );
+      } else if (
+        this.originLane === "draftLane" &&
+        e.target.parentNode.id === "liveLane"
+      ) {
+        // Move a story from draft to specific spot in live
+        let indexToInsertAt = e.target.id;
+        this.handleUpdate(
+          "draftToLiveSlot",
+          this.draggedStoryRef,
+          this.draggedEl,
+          indexToInsertAt
+        );
       }
+    },
+    handleUpdate: function(
+      message,
+      storyRef,
+      storyArrayIndex,
+      insertAtIndex = 0
+    ) {
+      let payload = { message, storyRef, storyArrayIndex, insertAtIndex };
+      console.log("reaches handle update", payload);
+      this.$store.dispatch("updateLists", payload);
     }
   }
 };

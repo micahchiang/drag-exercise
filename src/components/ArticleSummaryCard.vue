@@ -11,7 +11,15 @@
       <p class="info__container-text">{{author}}</p>
       <p class="info__container-datetext">{{publishedAt}}</p>
     </div>
-    <span class="card__status">{{status}}</span>
+    <span
+      class="card__status"
+      v-bind:class="{
+          'card__status-live': status !== 'Not Placed',
+          'card__status-draft': status === 'Not Placed'
+      }"
+    >
+      {{status}}
+    </span>
   </main>
 </template>
 
@@ -85,7 +93,12 @@ $btn--red: #ff3760;
   font-size: 0.7rem;
   font-weight: 600;
   color: $color--white;
-  background-color: $btn--red;
+  &-draft {
+    background-color: $btn--red;
+  }
+  &-live {
+    background-color: $btn--green;
+  }
 }
 </style>
 
