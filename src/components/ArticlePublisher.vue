@@ -213,6 +213,17 @@ header {
   font-size: 0.75rem;
   padding: 1rem;
   color: $color--white;
+  cursor: pointer;
+  transition: all 200ms;
+
+  &:hover {
+    transform: translate(-1px, -2px);
+    box-shadow: 1px 2px rgba($border--light, 0.9);
+  }
+  &:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 }
 .btn__reset {
   background-color: $btn--teal;

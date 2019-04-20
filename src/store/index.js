@@ -93,7 +93,7 @@ const store = new Vuex.Store({
       commit("resetLists");
     },
     async submitLists(data) {
-      let backendPayload = { msg: "updatePublishedStories", data };
+      let backendPayload = { path: "/some/api/endpoint", data };
       try {
         let res = await backendService.postToServer(backendPayload);
         console.log(res);

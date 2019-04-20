@@ -58,8 +58,12 @@ $btn--red: #ff3760;
   pointer-events: none;
 }
 .img__container {
-  height: 120px;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 120px;
+  bottom: 0;
+  right: 70%;
 }
 .summary__img {
   object-fit: cover;
@@ -72,13 +76,16 @@ $btn--red: #ff3760;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
+  margin-top: 3rem;
+  margin-left: 8rem;
+  text-align: left;
 
   &-title {
-    font-size: 1rem;
+    font-size: 0.89rem;
   }
   &-text {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
   &-datetext {
     font-size: 0.8rem;
