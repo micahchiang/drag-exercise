@@ -164,7 +164,6 @@ export default {
       insertAtIndex = 0
     ) {
       let payload = { message, storyRef, storyArrayIndex, insertAtIndex };
-      console.log("reaches handle update", payload);
       this.$store.dispatch("updateLists", payload);
     },
     showModal: function(msg) {
