@@ -31,34 +31,26 @@ const store = new Vuex.Store({
       let message = data.message;
       switch (message) {
         case "draftToLive": {
-          let story = state.draftStories.find(draft => {
-            return draft.id == data.storyRef;
-          });
+          let story = state.draftStories[data.storyArrayIndex];
           state.liveStories.push(story);
           state.draftStories.splice(data.storyArrayIndex, 1);
           break;
         }
         case "liveToDraft": {
-          let story = state.liveStories.find(story => {
-            return story.id == data.storyRef;
-          });
+          let story = state.liveStories[data.storyArrayIndex];
           story.status = "Not Placed";
           state.liveStories.splice(data.storyArrayIndex, 1);
           state.draftStories.push(story);
           break;
         }
         case "liveOrderChange": {
-          let story = state.liveStories.find(story => {
-            return story.id == data.storyRef;
-          });
+          let story = state.liveStories[data.storyArrayIndex];
           state.liveStories.splice(data.storyArrayIndex, 1);
           state.liveStories.splice(data.insertAtIndex, 0, story);
           break;
         }
         case "draftToLiveSlot": {
-          let story = state.draftStories.find(draft => {
-            return draft.id == data.storyRef;
-          });
+          let story = state.draftStories[data.storyArrayIndex];
           state.liveStories.splice(data.insertAtIndex, 0, story);
           state.draftStories.splice(data.storyArrayIndex, 1);
           break;

@@ -27,7 +27,6 @@
             v-for="(draft, index) in draftStories"
             :key=draft.id
             :id=index
-            :data-story=draft.id
             v-bind:draggable="true"
             v-on:dragstart="onDragStart($event)"
           >
@@ -46,7 +45,6 @@
             v-for="(story,index) in liveStories"
             :key=story.id
             :id=index
-            :data-story=story.id
             v-bind:draggable="true"
             v-on:dragstart="onDragStart($event)"
           >
@@ -98,7 +96,6 @@ export default {
   data: function() {
     return {
       draggedEl: null,
-      draggedStoryRef: null,
       originLane: null,
       hasModal: false,
       modalMessage: ""
@@ -111,7 +108,6 @@ export default {
     onDragStart: function(e) {
       e.dataTransfer.effectAllowed = "move";
       this.draggedEl = e.target.id;
-      this.draggedStoryRef = e.target.dataset.story;
       this.originLane = e.target.parentNode.id;
     },
     // preventDefault to allow onDrop
@@ -125,46 +121,31 @@ export default {
     onDrop: function(e) {
       if (e.target.id === "liveLane" && this.originLane === "draftLane") {
         // Move a story from draft to live
-        this.handleUpdate("draftToLive", this.draggedStoryRef, this.draggedEl);
+        this.handleUpdate("draftToLive", this.draggedEl);
       } else if (
         e.target.id === "draftLane" &&
         this.originLane === "liveLane"
       ) {
         // Move a story from live to draft
-        this.handleUpdate("liveToDraft", this.draggedStoryRef, this.draggedEl);
+        this.handleUpdate("liveToDraft", this.draggedEl);
       } else if (
         this.originLane === "liveLane" &&
         e.target.parentNode.id === "liveLane"
       ) {
         // Move a story up and down in live
         let indexToInsertAt = e.target.id;
-        this.handleUpdate(
-          "liveOrderChange",
-          this.draggedStoryRef,
-          this.draggedEl,
-          indexToInsertAt
-        );
+        this.handleUpdate("liveOrderChange", this.draggedEl, indexToInsertAt);
       } else if (
         this.originLane === "draftLane" &&
         e.target.parentNode.id === "liveLane"
       ) {
         // Move a story from draft to specific spot in live
         let indexToInsertAt = e.target.id;
-        this.handleUpdate(
-          "draftToLiveSlot",
-          this.draggedStoryRef,
-          this.draggedEl,
-          indexToInsertAt
-        );
+        this.handleUpdate("draftToLiveSlot", this.draggedEl, indexToInsertAt);
       }
     },
-    handleUpdate: function(
-      message,
-      storyRef,
-      storyArrayIndex,
-      insertAtIndex = 0
-    ) {
-      let payload = { message, storyRef, storyArrayIndex, insertAtIndex };
+    handleUpdate: function(message, storyArrayIndex, insertAtIndex = 0) {
+      let payload = { message, storyArrayIndex, insertAtIndex };
       this.$store.dispatch("updateLists", payload);
     },
     showModal: function(msg) {
